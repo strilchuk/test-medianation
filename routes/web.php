@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,6 +16,19 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return redirect('test');
+    Log::info("====================================");
+    Log::info($request->ip() . ' ' . $request->method() . ' '  . $request->getRequestUri());
+    Log::info("Headers: " , $request->headers->all());
+    Log::info("Content: " . $request->getContent());
+});
+
+
+Route::get('/', function () {
+    return redirect('test');
+    Log::info("====================================");
+    Log::info($request->ip() . ' ' . $request->method() . ' '  . $request->getRequestUri());
+    Log::info("Headers: " , $request->headers->all());
+    Log::info("Content: " . $request->getContent());
 });
 
 

@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\TestEvent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Log;
 
 class TestController extends Controller
 {
     public function test(Request $request)
     {
+        $this-> myLog($request);
+
         $testResult = false;
 
         $method['compare'] = $request->method() == 'PATCH';
@@ -35,6 +39,11 @@ class TestController extends Controller
         $timeStamp['style'] = $timeStamp['compare']?'success':'danger';
         $timeStamp['text'] = $timeStamp['compare']?'выполнено':'не выполнено';
 
+        $userAgent['value'] = $request->headers->get('user-agent');
+        $userAgent['compare'] = stripos($userAgent['value'], 'BestBrowser') != false;
+        $userAgent['style'] = $userAgent['compare']?'success':'danger';
+        $userAgent['text'] = $userAgent['compare']?'выполнено':'не выполнено';
+
         $currVisit = $visit['value'];
         if (!isset($visit['value'])) {
             $visit['value'] = 0;
@@ -43,19 +52,59 @@ class TestController extends Controller
         $currVisit++;
         Cookie::queue('visit', $currVisit);
 
+        $user = "admin";
+        $password = "qwerty123";
+        $hash = 'Basic ' . base64_encode($user . ":" . $password);
+        $auth['value'] = $request->headers->get('authorization');
+        $auth['compare'] = $hash == $auth['value'];
+        $auth['style'] = $auth['compare']?'success':'danger';
+        $auth['text'] = $auth['compare']?'выполнено':'не выполнено';
+
         if ($method['compare'] &&
                 $visit['compare'] &&
                 $referer['compare'] &&
-                $timeStamp['compare'])
+                $timeStamp['compare'] &&
+                $userAgent['compare'] &&
+                $auth['compare'])
             $testResult = true;
+
+        $testData = ['ip' => $request->ip(),
+            'method' => $method,
+            'visit' => $visit,
+            'referer' => $referer,
+            'timestamp' => $timeStamp,
+            'userAgent' => $userAgent,
+            'auth' => $auth,
+            'result' => $testResult];
+
+        $this->eventSave($testData);
 
         if (!$testResult)
             return view('failure',
-                ['method' => $method,
-                'visit' => $visit,
-                'referer' => $referer,
-                'timestamp' => $timeStamp]);
+                $testData);
         else
             return view('success', []);
+    }
+
+    private function eventSave($testData)
+    {
+        $testEvent = new TestEvent();
+        $testEvent->ip = $testData['ip'];
+        $testEvent->method = $testData['method']['value'];
+        $testEvent->referer = $testData['referer']['value'];
+        $testEvent->visit = $testData['visit']['value'];
+        $testEvent->body = $testData['timestamp']['value'];
+        $testEvent->useragent = $testData['userAgent']['value'];
+        $testEvent->auth = $testData['auth']['value'];
+        $testEvent->result = $testData['result'];
+        $testEvent->save();
+    }
+
+    private function myLog($request)
+    {
+        Log::info("====================================");
+        Log::info($request->ip() . ' ' . $request->method() . ' '  . $request->getRequestUri());
+        Log::info("Headers: " , $request->headers->all());
+        Log::info("Content: " . $request->getContent());
     }
 }

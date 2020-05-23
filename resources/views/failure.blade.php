@@ -23,6 +23,10 @@
                     class="badge badge-pill badge-{{ $visit['style'] }}">{{ $visit['text'] }}</span></li>
             <li>В теле запроса должно быть {{ $timestamp['current'] }} (у вас: {{ $timestamp['value'] }} ): <span
                     class="badge badge-pill badge-{{ $timestamp['style'] }}">{{ $timestamp['text'] }}</span></li>
+            <li>Нужно перейти из приложения BestBrowser (у вас: {{ $userAgent['value'] }} ): <span
+                    class="badge badge-pill badge-{{ $userAgent['style'] }}">{{ $userAgent['text'] }}</span></li>
+            <li>Выполнить Basic авторизацию под пользователем admin c паролем qwerty123: <span
+                    class="badge badge-pill badge-{{ $auth['style'] }}">{{ $auth['text'] }}</span></li>
 
         </ul>
         </p>
