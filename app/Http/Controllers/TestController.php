@@ -5,13 +5,13 @@ namespace App\Http\Controllers;
 use App\TestEvent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Facades\Log;
+use App\Services\logTrait;
 
 class TestController extends Controller
 {
     public function test(Request $request)
     {
-        $this-> myLog($request);
+        logTrait::myLog($request);
 
         $testResult = false;
 
@@ -68,6 +68,8 @@ class TestController extends Controller
                 $auth['compare'])
             $testResult = true;
 
+        $mark = base64_encode($request->ip() . ":" . $timeStamp['current']);
+
         $testData = ['ip' => $request->ip(),
             'method' => $method,
             'visit' => $visit,
@@ -75,15 +77,15 @@ class TestController extends Controller
             'timestamp' => $timeStamp,
             'userAgent' => $userAgent,
             'auth' => $auth,
-            'result' => $testResult];
+            'result' => $testResult,
+            'mark' => $mark];
 
         $this->eventSave($testData);
 
         if (!$testResult)
-            return view('failure',
-                $testData);
+            return view('failure', $testData);
         else
-            return view('success', []);
+            return view('success', ['url' => url("/welcome/$mark")]);
     }
 
     private function eventSave($testData)
@@ -97,14 +99,7 @@ class TestController extends Controller
         $testEvent->useragent = $testData['userAgent']['value'];
         $testEvent->auth = $testData['auth']['value'];
         $testEvent->result = $testData['result'];
+        $testEvent->mark = $testData['mark'];
         $testEvent->save();
-    }
-
-    private function myLog($request)
-    {
-        Log::info("====================================");
-        Log::info($request->ip() . ' ' . $request->method() . ' '  . $request->getRequestUri());
-        Log::info("Headers: " , $request->headers->all());
-        Log::info("Content: " . $request->getContent());
     }
 }
