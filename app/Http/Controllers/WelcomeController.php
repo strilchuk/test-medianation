@@ -7,8 +7,17 @@ use App\Services\logTrait;
 use App\TestEvent;
 use Illuminate\Http\Request;
 
+/**
+ * Class WelcomeController
+ * @package App\Http\Controllers
+ */
 class WelcomeController extends Controller
 {
+    /**
+     * @param Request $request
+     * @param string $mark
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|\Illuminate\View\View
+     */
     public function welcome(Request $request, $mark = "")
     {
         logTrait::myLog($request);
@@ -17,6 +26,11 @@ class WelcomeController extends Controller
         return view('welcome', ['mark' => $mark]);
     }
 
+    /**
+     * @param Request $request
+     * @param string $mark
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|\Illuminate\View\View
+     */
     public function contact(Request $request, $mark = "")
     {
         logTrait::myLog($request);
@@ -38,6 +52,10 @@ class WelcomeController extends Controller
         return view('contactStored');
     }
 
+    /**
+     * @param $mark
+     * @return bool|null
+     */
     private function checkMark($mark){
         if (!isset($mark))
             return null;

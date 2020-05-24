@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use App\Services\logTrait;
 
+/**
+ * Class TestController
+ * @package App\Http\Controllers
+ */
 class TestController extends Controller
 {
     public function test(Request $request)

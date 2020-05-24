@@ -6,8 +6,15 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Log;
 
+/**
+ * Trait logTrait
+ * @package App\Services
+ */
 trait logTrait
 {
+    /**
+     * @param $request
+     */
     public static function myLog($request)
     {
         Log::info("====================================");

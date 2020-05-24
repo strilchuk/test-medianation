@@ -20,11 +20,15 @@ Route::get('/', function (Request $request) {
     return redirect('test');
 });
 
-
 Route::get('/welcome/{mark?}', 'WelcomeController@welcome');
 
 Route::post('/welcome/{mark?}', 'WelcomeController@contact');
 
+Route::get('/login', 'LoginController@login');
+Route::post('/login', 'LoginController@auth');
+Route::get('/exit', 'LoginController@exit');
+
+Route::get('/statistic', 'StatisticController@index');
 
 $methods=['ACL','BASELINE-CONTROL', 'BIND', 'CHECKIN', 'CHECKOUT', 'CONNECT', 'COPY', 'DELETE', 'GET',
     'HEAD', 'LABEL', 'LINK', 'LOCK', 'MERGE', 'MKACTIVITY', 'MKCALENDAR', 'MKCOL', 'MKREDIRECTREF',
